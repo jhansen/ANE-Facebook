@@ -20,10 +20,13 @@ package com.freshplanet.ane.AirFacebook;
 
 import android.os.Bundle;
 
+import android.util.Log;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RequestThread extends Thread
 {
@@ -80,6 +83,8 @@ public class RequestThread extends Thread
 			}
 			else if (response.getError() != null)
 			{
+				Log.v("[AirFacebook]", String.format("Request failed: %s", response.getError().toString()));
+
 				// error result
 				if(response.getError().getRequestResult() != null)
 				{
@@ -88,13 +93,23 @@ public class RequestThread extends Thread
 				// error on sending
 				else
 				{
-					error = "{\"error\":\""+response.getError().toString()+"\"}";
+					error = new JSONObject().put("error", response.getError().toString()).toString();
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			error = "{\"error\":\""+e.toString()+"\"}";
+			Log.v("[AirFacebook]", String.format("Request exception: %s", e));
+
+			try
+			{
+				error = new JSONObject().put("error", e.toString()).toString();
+			}
+			catch (JSONException e1)
+			{
+				Log.v("[AirFacebook]", String.format("JSON put exception: %s", e));
+				error = "{\"error\":\"unknown error\"}";
+			}
 		}
 		
 		String result = "";
