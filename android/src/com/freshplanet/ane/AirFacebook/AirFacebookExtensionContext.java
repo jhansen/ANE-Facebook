@@ -29,6 +29,7 @@ import com.adobe.fre.FREContext;
 import com.adobe.fre.FREFunction;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.Settings;
 import com.freshplanet.ane.AirFacebook.functions.ActivateAppFunction;
 import com.freshplanet.ane.AirFacebook.functions.CanPresentOpenGraphDialogFunction;
 import com.freshplanet.ane.AirFacebook.functions.CanPresentMessageDialogFunction;
@@ -47,6 +48,7 @@ import com.freshplanet.ane.AirFacebook.functions.ShareLinkDialogFunction;
 import com.freshplanet.ane.AirFacebook.functions.ShareOpenGraphDialogFunction;
 import com.freshplanet.ane.AirFacebook.functions.ShareStatusDialogFunction;
 import com.freshplanet.ane.AirFacebook.functions.WebDialogFunction;
+import com.freshplanet.ane.AirFacebook.functions.OpenDeferredAppLinkFunction;
 
 public class AirFacebookExtensionContext extends FREContext
 {
@@ -79,6 +81,7 @@ public class AirFacebookExtensionContext extends FREContext
 		functions.put("webDialog", new WebDialogFunction());
 		functions.put("activateApp", new ActivateAppFunction());
 		functions.put("setUsingStage3D", new SetUsingStage3dFunction());
+		functions.put("openDeferredAppLink", new OpenDeferredAppLinkFunction());
 		return functions;	
 	}
 	
@@ -86,7 +89,7 @@ public class AirFacebookExtensionContext extends FREContext
 	private Session _session;
 	public boolean usingStage3D = false;
 	
-	public void init(String appID)
+	public void init(String appID, Boolean legacyMode)
 	{
 		_appID = appID;
 		
@@ -94,6 +97,7 @@ public class AirFacebookExtensionContext extends FREContext
 		if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED))
 		{
 			Session.setActiveSession(session);
+            Settings.setPlatformCompatibilityEnabled(legacyMode);
 			try
 			{
 				session.openForRead(null);
